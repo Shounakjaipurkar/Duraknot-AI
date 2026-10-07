@@ -26,37 +26,9 @@ Objectives
 9. Provide dashboard controls such as resetting the current length.
     
 __System Architecture__
-DuraKnot Fence
-      |
-      v
-Mechanical System
-Motor + Chain + Pulley + Rollers
-      |
-      +----------------------+
-      |                      |
-      v                      v
-Length Monitoring       AI Inspection
-      |                      |
-Rotary Encoder             Camera
-      |                      |
-      v                    OpenCV
-     ESP32                   |
-      |                      v
-      |                   YOLO11n
-      |                      |
-      |             Broken Fence /
-      |             Improper Knotting
-      |                      |
-      +----------+-----------+
-                 |
-                 v
-               Flask
-             Backend
-                 |
-          +------+------+
-          |             |
-          v             v
-        MySQL       Dashboard
+
+<img width="1199" height="1312" alt="image" src="https://github.com/user-attachments/assets/1216cb79-16d5-46b3-9326-34984536505a" />
+
 
 
    <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/17b706ad-21a0-4ea6-bf5d-bc15d86823e9" />
@@ -186,34 +158,8 @@ It can display:
 
 __Complete Project Flow__
 
-DuraKnot Fence
-      ↓
-Mechanical Production System
-      ↓
-Fence Movement
-      ↓
-+-----------------------+
-|                       |
-v                       v
-Rotary Encoder        Camera
-|                       |
-v                     OpenCV
-ESP32                    |
-|                       v
-Length Calculation    YOLO11n
-|                       |
-v                 Defect Detection
-Required Length          |
-Comparison               |
-|                       |
-+-----------+-----------+
-            ↓
-          Flask
-            |
-      +-----+-----+
-      |           |
-      v           v
-    MySQL     Dashboard
+<img width="1145" height="1374" alt="image" src="https://github.com/user-attachments/assets/34b2ee50-de8e-4661-9950-930d0cae6f22" />
+
 
 __Technology Stack__
 
