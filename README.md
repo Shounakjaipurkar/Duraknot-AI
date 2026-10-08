@@ -11,6 +11,7 @@ __2. FENCE DEFECT DETECTION__
 
 __2. FOR MORE VIDEOS FOLLOW THE DRIVE LINK__
 
+-----
 
 
 
@@ -18,8 +19,8 @@ __2. FOR MORE VIDEOS FOLLOW THE DRIVE LINK__
 
 
 
+__PROJECT OVERVIEW__
 
-Project Overview
 The A-1 DuraKnot AI-Based Fence Quality Inspection and Production Monitoring System combines production monitoring and AI-based visual inspection.
 The system integrates:
 - ESP32
