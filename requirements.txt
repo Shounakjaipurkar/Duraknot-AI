@@ -1,0 +1,20 @@
+Flask
+flask-cors
+opencv-python
+ultralytics
+mysql-connector-python
+numpy
+Pillow
+Werkzeug
+
+__What each library is for__
+
+Library	Purpose
+Flask	Backend/server and dashboard routes
+flask-cors	Allows communication between frontend and backend when needed
+opencv-python	Camera and image/video processing
+ultralytics	YOLO11n model and AI inference
+mysql-connector-python	Connects Flask with MySQL
+numpy	Image/frame and numerical processing
+Pillow	Image handling
+Werkzeug	Flask's underlying web utilities
