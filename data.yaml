@@ -1,0 +1,8 @@
+path: D:/second final
+
+train: train/images
+val: val/images
+
+names:
+  0: Broken fence
+  1: Improper knotting
