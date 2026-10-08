@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuraKnot Portal Login - A-1 Fence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-body">
+
+    <!-- TOP BAR WITH LOGO AND THEME TOGGLE -->
+    <div class="login-topbar">
+        <div class="login-brand">
+            <img src="{{ url_for('static', filename='a1_logo_full.png') }}" alt="A-1 Fence Logo" class="login-brand-logo">
+            <span class="brand-divider"></span>
+            <span class="brand-system-name">DuraKnot Vision</span>
+        </div>
+        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme"></button>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            
+            <div class="login-header">
+                <img src="{{ url_for('static', filename='a1_icon.jpg') }}" alt="A-1 Icon" class="login-icon">
+                <h1>System Authentication</h1>
+                <p class="login-subtitle">Production &amp; Quality Monitoring Portal</p>
+            </div>
+
+            {% if error %}
+            <div class="login-error">
+                <span class="error-symbol">⚠️</span>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form action="/login" method="POST" class="login-form">
+                <div class="form-group">
+                    <label for="username">User ID</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter authorized User ID"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="••••••••••••"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" class="login-button">
+                    Sign In to Terminal
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>A-1 Fence Products • DuraKnot Automated Vision</p>
+                <small>Authorized operator access only</small>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+const sunIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+
+const moonIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+
+const savedTheme = localStorage.getItem("a1_theme") || "light";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+function updateToggleButton(theme) {
+    const btn = document.getElementById("theme-btn");
+    if (btn) {
+        btn.innerHTML = theme === "dark" ? sunIcon : moonIcon;
+    }
+}
+updateToggleButton(savedTheme);
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("a1_theme", newTheme);
+    updateToggleButton(newTheme);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuraKnot Production Dashboard - A-1 Fence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+  
+    <!-- BRANDED NAVBAR -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='a1_logo_full.png') }}" alt="A-1 Fence Logo" class="nav-brand-img">
+            <span class="brand-divider"></span>
+            <span class="brand-system-name">DuraKnot Vision</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/history">History</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+        🌙
+    </button>
+</div>
+    </nav>
+
+    <div class="container">
+
+        <!-- HEADER WITH SQUARE ICON -->
+        <header>
+            <div class="header-left">
+                <img src="{{ url_for('static', filename='a1_icon.jpg') }}" alt="A-1 Icon" class="header-avatar">
+                <div>
+                    <h1>DuraKnot Production Dashboard</h1>
+                    <p>A-1 Fence Quality &amp; Automated Production Telemetry</p>
+                </div>
+            </div>
+            <div class="live-pill" id="system-status-pill">
+                <span class="live-dot" id="system-status-dot"></span>
+                <span id="system-status-text">System Live</span>
+            </div>
+        </header>
+
+        <!-- PRODUCTION METRICS -->
+        <section>
+            <div class="section-title-wrap">
+                <h2>Production Metrics</h2>
+                <span class="section-subtext">Active roll live counter</span>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>Roll Number</h3>
+                    <p id="roll-number">
+                        {{ production.roll_number if production else "No Data" }}
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Required Length</h3>
+                    <p id="required-length">
+                        {% if production %}
+                            {{ "%.2f"|format(production.required_length) }} m
+                        {% else %}
+                            No Data
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Current Length</h3>
+                    <button onclick="resetCurrentLength()">
+    Reset Current Length
+</button>
+                    <p class="highlight" id="current-length">
+                        {% if production %}
+                            {{ "%.3f"|format(production.current_length) }} m
+                        {% else %}
+                            No Data
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Status</h3>
+                    <p id="production-status">
+                        <span class="status-tag {% if production and production.status == 'RUNNING' %}status-running{% elif production and production.status == 'COMPLETED' %}status-completed{% endif %}">
+                            {{ production.status if production else "No Data" }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- PRODUCTION PROGRESS -->
+            {% set progress = 0 %}
+            {% if production and production.required_length > 0 %}
+                {% set progress = (production.current_length / production.required_length * 100) %}
+                {% if progress > 100 %}{% set progress = 100 %}{% endif %}
+                {% if progress < 0 %}{% set progress = 0 %}{% endif %}
+            {% endif %}
+
+            <div class="progress-section">
+                <div class="progress-header">
+                    <h3>Production Progress</h3>
+                    <span class="progress-val"><span id="progress-percent">{{ "%.1f"|format(progress) }}</span>% completed</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" id="production-progress" style="width: {{ progress }}%;"></div>
+                </div>
+            </div>
+
+            <!-- SET REQUIRED LENGTH -->
+            <div class="set-length">
+                <div class="set-length-info">
+                    <h3>Set Target Length</h3>
+                    <p>Enter the required roll length in meters to set active cut-off.</p>
+                </div>
+                <form action="/set_required_length" method="POST">
+                    <input
+                        type="number"
+                        name="required_length"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="Enter length in meters"
+                        required
+                    >
+                    <button type="submit">Set Required Length</button>
+                </form>
+            </div>
+        </section>
+
+        <div class="camera-controls">
+
+    <button onclick="switchCamera(0)">
+        Laptop Camera
+    </button>
+
+    <button onclick="switchCamera(1)">
+        TVS Camera
+    </button>
+
+</div>
+
+<script>
+function switchCamera(cameraIndex) {
+
+    fetch("/switch_camera/" + cameraIndex)
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Camera switch failed");
+            }
+
+            console.log("Camera switched to:", cameraIndex);
+
+        })
+        .catch(error => {
+            console.error(error);
+            alert("Could not switch camera");
+        });
+}
+</script>
+
+        <!-- 2-COLUMN: CAMERA & AI DETECTION -->
+        <div class="grid-2-col">
+            <section>
+                <div class="section-title-wrap">
+                    <h2>Live Inspection Camera</h2>
+                    <div class="stream-badge"><span class="pulse-dot"></span> Camera 01</div>
+                </div>
+                <div class="camera-box">
+                    <img src="{{ url_for('video_feed') }}" alt="DuraKnot Live Camera">
+                </div>
+            </section>
+
+            <section>
+                <div class="section-title-wrap">
+                    <h2>AI Defect Detection</h2>
+                    <span class="badge-accent">Vision Core</span>
+                </div>
+
+                <div class="detection-box">
+                    {% if latest_detection %}
+                        <div class="detection-header">
+                            <span class="defect-badge-warn">{{ latest_detection.defect_type }}</span>
+                            <span class="detection-time">{{ latest_detection.timestamp }}</span>
+                        </div>
+                        <div class="detection-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Confidence</span>
+                                <span class="stat-num">{{ latest_detection.confidence }}%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Frame Archive</span>
+                                <span class="stat-num highlight-path">{{ latest_detection.image_saved }}</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="no-defect-state">
+                            <div class="ok-icon">✓</div>
+                            <p class="status-clean">No Defects Detected</p>
+                            <small>Operating within optimal production thresholds.</small>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <h3 class="subsection-title">Alerts</h3>
+                <div class="alerts">
+                    {% for alert in alerts %}
+                        <div class="alert">
+                            <div class="alert-top">
+                                <span class="alert-tag">{{ alert.alert_type }}</span>
+                                <small class="alert-date">{{ alert.timestamp }}</small>
+                            </div>
+                            <p class="alert-msg">{{ alert.message }}</p>
+                        </div>
+                    {% else %}
+                        <p class="empty-state">No alerts reported.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+
+
+        <!-- RECENT DEFECTS TABLE -->
+        <section>
+            <div class="section-title-wrap">
+                <h2>Recent Defects</h2>
+                <span class="section-subtext">Latest 10 logged visual anomalies</span>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Defect Type</th>
+                            <th>Confidence</th>
+                            <th>Image Saved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for defect in defect_history %}
+                            <tr>
+                                <td class="font-mono">{{ defect.timestamp }}</td>
+                                <td><span class="table-tag">{{ defect.defect_type }}</span></td>
+                                <td>{{ defect.confidence }}%</td>
+                                <td class="font-mono text-muted">{{ defect.image_saved }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="empty-state">No defect records available.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+<script>
+// Apply saved theme
+const savedTheme = localStorage.getItem("a1_theme") || "light";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+function updateToggleButton(theme) {
+    const btn = document.getElementById("theme-btn");
+    if (btn) {
+        btn.textContent = theme === "dark" ? "☀️" : "🌙";
+    }
+}
+updateToggleButton(savedTheme);
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("a1_theme", newTheme);
+    updateToggleButton(newTheme);
+}
+
+// Live Status Indicator
+function setSystemStatus(isOnline) {
+    const pill = document.getElementById("system-status-pill");
+    const dot = document.getElementById("system-status-dot");
+    const text = document.getElementById("system-status-text");
+    if (!pill || !dot || !text) return;
+
+    if (isOnline) {
+        pill.classList.remove("offline");
+        text.innerText = "System Live";
+    } else {
+        pill.classList.add("offline");
+        text.innerText = "System Offline";
+    }
+}
+
+// Telemetry Poller
+function updateProductionData() {
+    fetch("/production_data")
+        .then(response => {
+            if (!response.ok) throw new Error("Server error");
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                setSystemStatus(false);
+                return;
+            }
+            setSystemStatus(true);
+
+           
+    const rollEl = document.getElementById("roll-number");
+            if (rollEl) rollEl.innerText = data.roll_number;
+
+            const reqEl = document.getElementById("required-length");
+            if (reqEl) reqEl.innerText = parseFloat(data.required_length).toFixed(2) + " cm";
+
+            const currEl = document.getElementById("current-length");
+            if (currEl) currEl.innerText = parseFloat(data.current_length).toFixed(3) + " cm";
+
+            const statusEl = document.getElementById("production-status");
+            if (statusEl) {
+                const statusClass = data.status === 'RUNNING' ? 'status-running' : (data.status === 'COMPLETED' ? 'status-completed' : '');
+                statusEl.innerHTML = `<span class="status-tag ${statusClass}">${data.status}</span>`;
+            }
+
+            let progress = 0;
+            if (data.required_length > 0) {
+                progress = (data.current_length / data.required_length) * 100;
+            }
+            if (progress > 100) progress = 100;
+            if (progress < 0) progress = 0;
+
+            const barEl = document.getElementById("production-progress");
+            if (barEl) barEl.style.width = progress + "%";
+
+            const percentEl = document.getElementById("progress-percent");
+            if (percentEl) percentEl.innerText = progress.toFixed(1);
+        })
+        .catch(error => {
+            console.error("Production update error:", error);
+            setSystemStatus(false);
+        });
+}
+
+updateProductionData();
+setInterval(updateProductionData, 1000);
+
+
+function resetCurrentLength() {
+    if (!confirm("Reset current length to 0 cm?")) {
+        return;
+    }
+
+    fetch('/reset_length', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        updateProductionData();
+    })
+    .catch(error => {
+        console.error("Reset error:", error);
+        alert("Failed to reset current length");
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ roll.roll_number }} - DuraKnot Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='a1_logo_full.png') }}" alt="A-1 Fence Logo" class="nav-brand-img">
+            <span class="brand-divider"></span>
+            <span class="brand-system-name">DuraKnot Vision</span>
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/history" class="active">History</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+        🌙
+    </button>
+</div>
+    </nav>
+
+    <div class="container">
+
+        <header>
+            <div class="header-left">
+                <img src="{{ url_for('static', filename='a1_icon.jpg') }}" alt="A-1 Icon" class="header-avatar">
+                <div>
+                    <h1>Roll Details: {{ roll.roll_number }}</h1>
+                    <p>Comprehensive telemetry and grouped defect inspection</p>
+                </div>
+            </div>
+            <a href="{{ url_for('history') }}" class="back-button">← Back to History</a>
+        </header>
+
+        <section>
+            <div class="section-title-wrap">
+                <h2>Roll Specifications</h2>
+                <span class="status-tag status-completed">{{ roll.status }}</span>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>Roll Number</h3>
+                    <p>{{ roll.roll_number }}</p>
+                </div>
+                <div class="card">
+                    <h3>Required Target</h3>
+                    <p>{{ "%.2f"|format(roll.required_length) }} m</p>
+                </div>
+                <div class="card">
+                    <h3>Produced Output</h3>
+                    <p class="highlight">{{ "%.2f"|format(roll.current_length) }} m</p>
+                </div>
+                <div class="card">
+                    <h3>Total Defects</h3>
+                    <p style="color: {% if total_defects > 0 %}var(--danger){% else %}var(--success){% endif %};">
+                        {{ total_defects }}
+                    </p>
+                </div>
+            </div>
+
+            <div style="background: var(--card-surface); padding: 14px 20px; border-radius: var(--radius-md); border: 1px solid var(--card-border); font-size: 0.85rem; color: var(--text-secondary); display: flex; gap: 30px; flex-wrap: wrap;">
+                <div><strong>Start Time:</strong> {{ roll.start_time or 'N/A' }}</div>
+                <div><strong>Completion Time:</strong> {{ roll.end_time or 'N/A' }}</div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-title-wrap">
+                <h2>Identified Defects</h2>
+                <span class="section-subtext">Grouped by snapshot file</span>
+            </div>
+
+            {% if defects %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Snapshot File / Image</th>
+                                <th>Defect Category</th>
+                                <th>Occurrence Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for defect in defects %}
+                                <tr>
+                                    <td class="font-mono text-muted">{{ defect.image_name }}</td>
+                                    <td><span class="table-tag">{{ defect.defect_type }}</span></td>
+                                    <td><strong>{{ defect.count }}</strong></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="no-defect-state">
+                    <div class="ok-icon">✓</div>
+                    <p class="status-clean">No Defects Recorded</p>
+                    <small>Roll completed successfully with zero visual defects detected.</small>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+<script>
+// Check saved preference or default to light
+const savedTheme = localStorage.getItem("a1_theme") || "light";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+function updateToggleButton(theme) {
+    const btn = document.getElementById("theme-btn");
+    if (btn) {
+        btn.textContent = theme === "dark" ? "☀️" : "🌙";
+    }
+}
+
+// Initial button icon state
+updateToggleButton(savedTheme);
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("a1_theme", newTheme);
+    updateToggleButton(newTheme);
+}
+</script>
+</body>
+</html>

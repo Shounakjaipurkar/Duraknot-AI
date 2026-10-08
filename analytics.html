@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuraKnot Analytics - A-1 Fence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='a1_logo_full.png') }}" alt="A-1 Fence Logo" class="nav-brand-img">
+            <span class="brand-divider"></span>
+            <span class="brand-system-name">DuraKnot Vision</span>
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/history">History</a>
+            <a href="/analytics" class="active">Analytics</a>
+        </div>
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+        🌙
+    </button>
+</div>
+    </nav>
+
+    <div class="container">
+
+        <header>
+            <div class="header-left">
+                <img src="{{ url_for('static', filename='a1_icon.jpg') }}" alt="A-1 Icon" class="header-avatar">
+                <div>
+                    <h1>DuraKnot Analytics &amp; Reports</h1>
+                    <p>A-1 Fence Production Volume and AI Defect Analysis</p>
+                </div>
+            </div>
+            <a href="{{ url_for('download_report') }}" class="download-report-btn">
+                📄 Download PDF Report
+            </a>
+        </header>
+
+       <section>
+    <div class="section-title-wrap">
+        <h2>Production Summary</h2>
+        <span class="section-subtext">Overall factory production &amp; quality metrics</span>
+    </div>
+
+    <div class="cards cards-5">
+        <!-- 1. Total Rolls Produced -->
+        <div class="card">
+            <h3>Total Rolls Produced</h3>
+            <p>{{ total_rolls_produced }}</p>
+        </div>
+
+        <!-- 2. Total Rolls Completed -->
+        <div class="card">
+            <h3>Total Rolls Completed</h3>
+            <p>{{ production_summary.total_rolls }}</p>
+        </div>
+
+        <!-- 3. Total Length Produced -->
+        <div class="card">
+            <h3>Total Length Produced</h3>
+            <p class="highlight">{{ "%.2f"|format(production_summary.total_length) }} m</p>
+        </div>
+
+        <!-- 4. Average Roll Length -->
+        <div class="card">
+            <h3>Average Roll Length</h3>
+            <p>{{ "%.2f"|format(production_summary.average_length) }} m</p>
+        </div>
+
+        <!-- 5. Total Defects Logged -->
+        <div class="card">
+            <h3>Total Defects Logged</h3>
+            <p style="color: var(--danger);">{{ total_defects }}</p>
+        </div>
+    </div>
+</section>
+
+        <div class="grid-2-col">
+            <section>
+                <div class="section-title-wrap">
+                    <h2>Produced Output (Meters)</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="productionChart"></canvas>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-title-wrap">
+                    <h2>Defect Distribution</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="defectTypeChart"></canvas>
+                </div>
+            </section>
+        </div>
+
+        <section>
+            <div class="section-title-wrap">
+                <h2>Defect Volume per Roll</h2>
+            </div>
+            <div class="chart-container">
+                <canvas id="defectRollChart"></canvas>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-title-wrap">
+                <h2>Production Breakdown</h2>
+            </div>
+
+            {% if production_by_roll %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Required Length</th>
+                                <th>Produced Length</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for roll in production_by_roll %}
+                                <tr>
+                                    <td><strong>{{ roll.roll_number }}</strong></td>
+                                    <td>{{ "%.2f"|format(roll.required_length) }} m</td>
+                                    <td>{{ "%.2f"|format(roll.current_length) }} m</td>
+                                    <td><span class="status-tag status-completed">COMPLETED</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">No completed rolls available.</div>
+            {% endif %}
+        </section>
+
+    </div>
+
+<script>
+// Clean corporate styling for A-1 Fence Analytics
+Chart.defaults.color = '#475569';
+Chart.defaults.borderColor = '#e2e8f0';
+
+const productionData = {{ production_by_roll | tojson }};
+const defectTypeData = {{ defects_by_type | tojson }};
+const defectRollData = {{ defects_by_roll | tojson }};
+
+// 1. Production By Roll (A-1 Charcoal/Slate)
+new Chart(document.getElementById("productionChart"), {
+    type: "bar",
+    data: {
+        labels: productionData.map(item => item.roll_number),
+        datasets: [{
+            label: "Produced Length (m)",
+            data: productionData.map(item => Number(item.current_length || 0)),
+            backgroundColor: '#1a1f29',
+            borderRadius: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Meters' } }
+        }
+    }
+});
+
+// 2. Defects By Type (A-1 Corporate Theme)
+new Chart(document.getElementById("defectTypeChart"), {
+    type: "doughnut",
+    data: {
+        labels: defectTypeData.map(item => item.defect_type),
+        datasets: [{
+            data: defectTypeData.map(item => Number(item.defect_count || 0)),
+            backgroundColor: ['#c1272d', '#b45309', '#2563eb', '#15803d', '#7c3aed'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'right' } }
+    }
+});
+
+// 3. Defects By Roll (A-1 Crimson Bar Chart)
+new Chart(document.getElementById("defectRollChart"), {
+    type: "bar",
+    data: {
+        labels: defectRollData.map(item => item.roll_number),
+        datasets: [{
+            label: "Number of Defects",
+            data: defectRollData.map(item => Number(item.defect_count || 0)),
+            backgroundColor: '#c1272d',
+            borderRadius: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { precision: 0 },
+                title: { display: true, text: 'Defects' }
+            }
+        }
+    }
+});
+</script>
+<script>
+// Check saved preference or default to light
+const savedTheme = localStorage.getItem("a1_theme") || "light";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+function updateToggleButton(theme) {
+    const btn = document.getElementById("theme-btn");
+    if (btn) {
+        btn.textContent = theme === "dark" ? "☀️" : "🌙";
+    }
+}
+
+// Initial button icon state
+updateToggleButton(savedTheme);
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("a1_theme", newTheme);
+    updateToggleButton(newTheme);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuraKnot Roll History - A-1 Fence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='a1_logo_full.png') }}" alt="A-1 Fence Logo" class="nav-brand-img">
+            <span class="brand-divider"></span>
+            <span class="brand-system-name">DuraKnot Vision</span>
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/history" class="active">History</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+        🌙
+    </button>
+</div>
+    </nav>
+
+
+    <div class="container">
+
+        <header>
+            <div class="header-left">
+            <img src="{{ url_for('static', filename='a1_icon.jpg') }}" alt="A-1 Icon" class="header-avatar">
+                <div>
+                    <h1>DuraKnot Roll History</h1>
+                    <p>A-1 Fence Quality &amp; Defect Inspection Archive</p>
+                </div>
+            </div>
+        </header>
+
+        <section>
+            <div class="section-title-wrap">
+                <h2>Completed Production Rolls</h2>
+                <span class="section-subtext">Click on any roll to view full defect breakdown</span>
+            </div>
+
+            {% if rolls %}
+                <div class="cards">
+                    {% for roll in rolls %}
+                        <div class="card">
+                            <h3>{{ roll.roll_number }}</h3>
+                            <p class="highlight">{{ "%.2f"|format(roll.current_length) }} m</p>
+                            <small>Target: {{ "%.2f"|format(roll.required_length) }} m</small>
+
+                            <div style="margin-top: 14px; font-size: 0.82rem; color: var(--text-secondary);">
+                                {% if roll.start_time %}
+                                    <div><strong>Started:</strong> {{ roll.start_time }}</div>
+                                {% endif %}
+                                {% if roll.end_time %}
+                                    <div><strong>Finished:</strong> {{ roll.end_time }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div style="margin-top: 18px;">
+                                <a href="{{ url_for('roll_details', roll_id=roll.roll_id) }}" class="view-button">
+                                    View Roll Details →
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No Production History</h3>
+                    <p>No completed production rolls have been archived yet.</p>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+<script>
+// Check saved preference or default to light
+const savedTheme = localStorage.getItem("a1_theme") || "light";
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+function updateToggleButton(theme) {
+    const btn = document.getElementById("theme-btn");
+    if (btn) {
+        btn.textContent = theme === "dark" ? "☀️" : "🌙";
+    }
+}
+
+// Initial button icon state
+updateToggleButton(savedTheme);
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("a1_theme", newTheme);
+    updateToggleButton(newTheme);
+}
+</script>
+</body>
+</html>
