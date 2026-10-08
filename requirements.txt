@@ -7,7 +7,7 @@ numpy
 Pillow
 Werkzeug
 
-__What each library is for__
+What each library is for
 
 Library	Purpose
 Flask	Backend/server and dashboard routes
