@@ -3,6 +3,7 @@
 WORKING OF THE PROJECT
 
 __1. WITH CURRENT LENGTH AND REQUIRED LENGTH__
+
 <img width="400" height="225" alt="first one" src="https://github.com/user-attachments/assets/b8525a66-4da1-4b6b-abac-5ebfab0db1f2" />
 
 __2. FENCE DEFECT DETECTION__
