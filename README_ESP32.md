@@ -101,19 +101,4 @@ After resetting, the ESP32 sends the updated values back to the Flask server.
 
 ## ESP32 in the Complete System
 
-
-Rotary Encoder ──┐
-                 │
-Hall Sensor ─────┤
-                 ↓
-               ESP32
-                 │
-        ┌────────┼────────┐
-        ↓        ↓        ↓
-      LCD      Servo     Wi-Fi
-                          │
-                          ↓
-                        Flask
-                          │
-                          ↓
-                     Dashboard
+<img width="190" height="237" alt="image" src="https://github.com/user-attachments/assets/186623c4-b670-410c-926b-636704c8800d" />
