@@ -7,14 +7,3 @@ numpy
 Pillow
 Werkzeug
 
-What each library is for
-
-Library	Purpose
-Flask	Backend/server and dashboard routes
-flask-cors	Allows communication between frontend and backend when needed
-opencv-python	Camera and image/video processing
-ultralytics	YOLO11n model and AI inference
-mysql-connector-python	Connects Flask with MySQL
-numpy	Image/frame and numerical processing
-Pillow	Image handling
-Werkzeug	Flask's underlying web utilities
