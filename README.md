@@ -1,5 +1,23 @@
 # A-1 DuraKnot AI-Based Fence Quality Inspection and Production Monitoring 
 
+WORKING OF THE PROJECT
+
+__1. WITH CURRENT LENGTH AND REQUIRED LENGTH__
+<img width="400" height="225" alt="first one" src="https://github.com/user-attachments/assets/b8525a66-4da1-4b6b-abac-5ebfab0db1f2" />
+
+__2. FENCE DEFECT DETECTION__
+<img width="880" height="475" alt="image" src="https://github.com/user-attachments/assets/c3c5ff23-2e63-4452-b82f-a95834266a1b" />
+
+__2. FOR MORE VIDEOS FOLLOW THE DRIVE LINK__
+
+
+
+
+
+
+
+
+
 Project Overview
 The A-1 DuraKnot AI-Based Fence Quality Inspection and Production Monitoring System combines production monitoring and AI-based visual inspection.
 The system integrates:
